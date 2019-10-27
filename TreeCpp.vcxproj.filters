@@ -43,5 +43,6 @@
     <None Include="TreeBlueprint.tpp">
       <Filter>Template Implementation</Filter>
     </None>
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

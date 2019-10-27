@@ -64,6 +64,7 @@ private:
 		// iterator operator overloads:
 		TreeIterator& operator=(const TreeIterator& other) {
 			this->iter = other.iter;
+			this->root_iter = other.root_iter;
 			return *this;
 		}
 		reference operator*() const { return iter->access_value(); }
@@ -198,10 +199,6 @@ bool operator>=(const TreeBlueprint<T>& lhs, const TreeBlueprint<T>& rhs);
 template <class T>
 void swap(TreeBlueprint<T>& lhs, TreeBlueprint<T>& rhs);
 
-
-// outputstream overload:
-template <class T>
-std::ostream& operator<<(std::ostream& os, const TreeBlueprint<T>& tree);
 
 #include "TreeBlueprint.tpp"
 

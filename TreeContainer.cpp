@@ -19,7 +19,7 @@ void preliminaryTests() {
 	myBinTree.insert_at(4, 2); // 1 -> 2 -> (3, 4)
 
 	// insertion should fail, 2 has two children already
-	auto myResult = myBinTree.insert_at(2, 5);
+	auto myResult = myBinTree.insert_at(5, 2000);
 	std::cout << (myResult.second ? "Success!" : "Fail!") << "\n";
 
 	myBinTree.insert_at(6, 3); // 1 -> 2 -> ((3 -> 6), 4)
@@ -41,6 +41,22 @@ void preliminaryTests() {
 	for (auto myNode : myBinTree) {
 		std::cout << myNode << " ";
 	}
+
+	std::cout << "\n------------------------\n";
+
+	printTree<int>(std::cout, myBinTree);
+
+	std::cout << "\n------------------------\n";
+
+	printTree<int>(std::cout, myBinTree.cbegin());
+
+	std::cout << "\n------------------------\n";
+
+	BinaryTree<int> myEmptyTree;
+	printTree<int>(std::cout, myEmptyTree.begin());
+	printTree<int>(std::cout, myBinTree.end());
+
+	std::cout << "\n------------------------\n";
 
 	// should be 5
 	std::cout << "\nTree has now " << myBinTree.size() << " elements.\n";

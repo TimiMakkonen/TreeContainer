@@ -3,6 +3,9 @@
 #endif
 
 #include <stack>
+#include <tuple>
+#include <string>
+#include <iostream>
 
 #include "BinaryTree.h"
 
@@ -22,22 +25,24 @@ typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::leftmostChild() {
 }
 
 template<class T>
-typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::rightmostChildLeaf() {
-
+std::pair<typename BinaryTree<T>::TreeNode*, size_t> BinaryTree<T>::TreeNode::rightmostChildLeaf() {
+	size_t distanceTravelled = 0;
 	TreeNode* currentNode = this;
 	bool leafNotFound = true;
 	while (leafNotFound) {
 		if (currentNode->rightChild != nullptr) {
 			currentNode = currentNode->rightChild.get();
+			++distanceTravelled;
 		}
 		else if (currentNode->leftChild != nullptr) {
 			currentNode = currentNode->leftChild.get();
+			++distanceTravelled;
 		}
 		else {
 			leafNotFound = false;
 		}
 	}
-	return currentNode;
+	return std::pair<TreeNode*, size_t>(currentNode, distanceTravelled);
 }
 
 
@@ -188,55 +193,6 @@ std::pair<typename BinaryTree<T>::iterator, bool>
 
 
 
-//-------------ORIGINAL INSERTIONS---------TO BE DELETED-------------
-// insert element
-//BinaryTreeNode<T>& insert(const T& value);
-//BinaryTreeNode<T>* insert(const T& value, const T& parent = this->root->data);
-//-------------------------------------------------------------------
-
-
-//template<class T>
-//BinaryTreeNode<T>& BinaryTree<T>::insert(const T& value) {
-//
-//	if (this->root == nullptr) {
-//		this->root = std::make_unique<BinaryTreeNode<T>>(value, nullptr);
-//		return *this->root;
-//	}
-//	else {
-//		BinaryTreeNode<T>* previousNode = nullptr;
-//		BinaryTreeNode<T>* currentNode = this->root;
-//		while (currentNode != nullptr) {
-//			previousNode = currentNode;
-//			currentNode = currentNode->leftChild;
-//		}
-//		previousNode->leftChild = std::make_unique<BinaryTreeNode<T>>(value, previousNode);
-//		return *previousNode->leftChild;
-//	}
-//}
-//
-//template<class T>
-//BinaryTreeNode<T>* BinaryTree<T>::insert(const T& value, const T& parentValue) {
-//
-//	BinaryTreeNode<T>* parentNode = this->find(parentValue);
-//
-//	if (parentNode != nullptr) {
-//		if (parentNode->leftChild == nullptr) {
-//			parentNode->leftChild = std::make_unique<BinaryTreeNode<T>>(value, parentNode);
-//			return parentNode->leftChild;
-//		}
-//		else if (parentNode->rightChild == nullptr) {
-//			parentNode->rightChild = std::make_unique<BinaryTreeNode<T>>(value, parentNode);
-//			return parentNode->rightChild;
-//		}
-//		else {
-//			std::cerr << "Error: Parent already has 2 children\n";
-//		}
-//	}
-//	return nullptr;
-//}
-
-
-
 template<class T>
 typename BinaryTree<T>::iterator BinaryTree<T>::find(const value_type& value) {
 
@@ -258,44 +214,6 @@ typename BinaryTree<T>::const_iterator BinaryTree<T>::find(const value_type& val
 	}
 	return this->end();
 }
-
-
-//----------------ORIGINAL FINDER-----------TO BE DELETED-----------------
-//// get pointer to an element on tree
-//BinaryTreeNode<T>* find(const T& value);
-//iterator find(const value_type& value) const; // to find the first occurrence of value using iterator (return this->end() if no luck)
-//------------------------------------------------------------------------
-//template<class T>
-//BinaryTreeNode<T>* BinaryTree<T>::find(const T& value) {
-//
-//	if (this->root == nullptr) {
-//		std::cerr << "Error: Parent not found\n";
-//		return nullptr;
-//	}
-//	else {
-//
-//		//non-recursive depth first search
-//		BinaryTreeNode<T>* nodePtr = this->root;
-//		std::stack<BinaryTreeNode<T>*> nodeStack;
-//		nodeStack.push(root);
-//
-//		while (!nodeStack.empty()) {
-//			nodePtr = nodeStack.top();
-//			if (nodePtr->data == value) {
-//				return nodePtr;
-//			}
-//			nodeStack.pop();
-//			if (nodePtr->rightChild != nullptr) {
-//				nodeStack.push(nodePtr->rightChild);
-//			}
-//			if (nodePtr->leftChild != nullptr) {
-//				nodeStack.push(nodePtr->leftChild);
-//			}
-//		}
-//	}
-//	std::cerr << "Error: Parent not found\n";
-//	return nullptr;
-//}
 
 
 template<class T>
@@ -321,11 +239,10 @@ bool BinaryTree<T>::has(const value_type& value) {
 }
 
 
-
-
-
-
-
+template<class T>
+std::ostream& operator<<(std::ostream& os, typename BinaryTree<T>::TreeIterator& tree_cit) {
+	return os;
+}
 
 template<class T>
 bool operator==(const BinaryTree<T>& lhs, const BinaryTree<T>& rhs) {
@@ -360,4 +277,104 @@ bool operator>=(const BinaryTree<T>& lhs, const BinaryTree<T>& rhs) {
 template<class T>
 void swap(BinaryTree<T>& lhs, BinaryTree<T>& rhs) {
 	lhs.swap(rhs);
+}
+
+
+template<class T>
+void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit) {
+
+	using node_ptr = typename BinaryTree<T>::TreeNode*;
+
+	// pointer to node, prefix string, isLeft?, hasRightSibling?
+	std::stack<std::tuple<node_ptr, std::string, bool, bool> > nodeStack;
+
+	// printing first node
+	node_ptr firstNodePtr = tree_cit.get_iter();
+	if (firstNodePtr != nullptr) {
+
+		// print the value of the first node
+		os << firstNodePtr->access_value() << "\n";
+
+		// enter the next tree level - left and right branch
+		node_ptr newRightNodePtr = firstNodePtr->rightChild.get();
+		node_ptr newLeftNodePtr = firstNodePtr->leftChild.get();
+		if (newRightNodePtr != nullptr) {
+			nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newRightNodePtr, "", false, false));
+			if (newLeftNodePtr != nullptr) {
+				nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newLeftNodePtr, "", true, true));
+			}
+		}
+		else if (newLeftNodePtr != nullptr) {
+			nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newLeftNodePtr, "", true, false));
+		}
+
+
+		std::tuple<node_ptr, std::string, bool, bool> nodeTuple;
+
+		// printing rest of nodes
+		while (!nodeStack.empty()) {
+			nodeTuple = nodeStack.top();
+			nodeStack.pop();
+
+				os << std::get<1>(nodeTuple);
+
+				if (std::get<2>(nodeTuple)) {
+					os << (std::get<3>(nodeTuple) ? "+-L-" : "\\-L-");
+				}
+				else {
+					os << "\\-R-";
+				}
+
+				// print the value of the node
+				os << std::get<0>(nodeTuple)->access_value() << "\n";
+
+				// enter the next tree level - left and right branch
+				std::string newPrefix = std::get<1>(nodeTuple) + (std::get<2>(nodeTuple) ? "|    " : "     ");
+				node_ptr newRightNodePtr = std::get<0>(nodeTuple)->rightChild.get();
+				node_ptr newLeftNodePtr = std::get<0>(nodeTuple)->leftChild.get();
+				if (newRightNodePtr != nullptr) {
+					nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newRightNodePtr, newPrefix, false, false));
+					if (newLeftNodePtr != nullptr) {
+						nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newLeftNodePtr, newPrefix, true, true));
+					}
+				}
+				else if (newLeftNodePtr != nullptr) {
+					nodeStack.push(std::tuple<node_ptr, std::string, bool, bool>(newLeftNodePtr, newPrefix, true, false));
+				}
+		}
+	}
+}
+
+
+
+
+
+template<class T>
+void printTree(std::ostream& os, BinaryTree<T>& tree) { // TODO
+	
+	/*for (typename BinaryTree<T>::const_iterator it = tree.cbegin(); it != tree.cend(); ++it) {
+		os << *it << " ";
+	}
+
+	os << "\n";
+	std::string preNodeStr = "+---";
+	std::string spaceBeforeStr = "|   ";
+
+	typename BinaryTree<T>::const_iterator it = tree.cbegin();
+	if (it != tree.cend()) {
+		os << *it << '\n';
+		++it;
+		size_t prevDistBelow = 0;
+		size_t currDistBelow = 0;
+		for (; it != tree.cend(); ++it) {
+			currDistBelow = it.dist_below();
+			for (size_t i = 1; i < currDistBelow; ++i) {
+				os << spaceBeforeStr;
+			}
+			os << preNodeStr << *it << '\n';
+			prevDistBelow = currDistBelow;
+		}
+	}*/
+
+	printTree<T>(os, tree.cbegin());
 }

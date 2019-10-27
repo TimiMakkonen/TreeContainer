@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="BinaryTree.tpp" />
+    <None Include="README.md" />
     <None Include="TreeBlueprint.tpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

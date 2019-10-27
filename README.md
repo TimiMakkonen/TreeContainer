@@ -30,6 +30,7 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
   * Partly finished state:
     * Mostly working STL compliant bidirectional iterator (not properly tested).
     * Working basic insertion and find operations.
+	* Working print functionality.
   * Based on unique_ptr.
   * NOT THREAD SAFE!
 * BlueprintTree:
@@ -39,6 +40,9 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 ### Version History:
 
+#### Version 0.5.5:
+
+Added presentable printing functionality for BinaryTree.
 
 #### Version 0.5.0:
 
