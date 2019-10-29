@@ -99,7 +99,7 @@ public:
 
 	// constructors:
 	//explicit TreeBlueprint(const Compare& comp = Compare()); // default constructor (custom compare)
-	explicit TreeBlueprint() { } // default constructor
+	TreeBlueprint() = default; // default constructor
 	template <class InputIterator>
 	TreeBlueprint(InputIterator first, InputIterator last); // iterator constructor
 	TreeBlueprint(const TreeBlueprint&); // copy constructor
@@ -108,11 +108,11 @@ public:
 
 
 	// destructor:
-	~TreeBlueprint();
+	~TreeBlueprint() = default;
 
 
 	// assignment operators:
-	TreeBlueprint& operator=(const TreeBlueprint& other); // copy assignment
+	//TreeBlueprint& operator=(const TreeBlueprint& other); // copy assignment, not in use for unique_ptr
 	TreeBlueprint& operator=(TreeBlueprint&& x); // move assignment
 	//TreeBlueprint& operator=(initializer_list<value_type>); // initializer_list assignment
 

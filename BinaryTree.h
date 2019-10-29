@@ -25,25 +25,35 @@ private:
 	// tree node definition;
 	class TreeNode {
 	private:
+		// node data:
 		value_type data;
 
+		TreeNode(const TreeNode& other, TreeNode* const parent);
+
 	public:
+		// node variables:
 		TreeNode* parent;
 		std::unique_ptr<TreeNode> leftChild = nullptr;
 		std::unique_ptr<TreeNode> rightChild = nullptr;
 
+		// node constructos:
+		TreeNode() = default;
 		TreeNode(const value_type& value, TreeNode* const parent);
+		TreeNode(const TreeNode& other);
+		TreeNode(TreeNode&&) = default;
 
 		value_type& access_value() { return this->data; }
 
-		TreeNode* leftmostChild();
-		std::pair<TreeNode*, size_t> rightmostChildLeaf();
+		TreeNode* leftmostChild(); // to find leftmostChild
+		TreeNode* rightmostChildLeaf(); // to find rightmostChildLeaf
+		size_t subtreeSize(); // return number of elements in the subtree (this node included)
 	};
 
+	// class variables:
 	std::unique_ptr<TreeNode> root = nullptr;
 	size_t _size = 0;
 
-	template <class IterType> // FIXME: dist_below_init_iter still included (to be removed)
+	template <class IterType>
 	class TreeIterator {
 
 	public:
@@ -60,51 +70,44 @@ private:
 
 		node_pointer root_iter;
 		node_pointer iter;
-		size_t dist_below_init_iter;
 
 	public:
 
 		// iterator constructors:
-		TreeIterator() : iter(node_pointer()), root_iter(node_pointer()), dist_below_init_iter(size_t()) { }
+		TreeIterator() : iter(node_pointer()), root_iter(node_pointer()) { }
 		explicit TreeIterator(const std::unique_ptr<TreeNode>& i, const std::unique_ptr<TreeNode>& root_i) 
-								: iter(i.get()), root_iter(root_i.get()), dist_below_init_iter(size_t()) { }
+								: iter(i.get()), root_iter(root_i.get()) { }
 		TreeIterator(const TreeIterator& other) 
-				: iter(other.iter), root_iter(other.root_iter), dist_below_init_iter(other.dist_below_init_iter) { }
-		TreeIterator(const node_pointer& i, const node_pointer& root_i, const size_t dist_i)
-			: iter(i), root_iter(root_i), dist_below_init_iter(dist_i) { }
+				: iter(other.iter), root_iter(other.root_iter) { }
+		TreeIterator(const node_pointer& i, const node_pointer& root_i)
+			: iter(i), root_iter(root_i) { }
 
 		// conversion to const iterator
-		operator TreeIterator<const value_type>() { return TreeIterator<const value_type>(iter, root_iter, dist_below_init_iter); }
+		operator TreeIterator<const value_type>() { return TreeIterator<const value_type>(iter, root_iter); }
 
 		// iterator access:
 		node_pointer get_iter() const { return this->iter; }
-		// how many nodes below initial iterator (positive if below, negative if above)
-		size_t dist_below() const { return this->dist_below_init_iter; }
 
 		// iterator operator overloads:
 		TreeIterator& operator=(const TreeIterator& other) {
 			this->iter = other.iter;
 			this->root_iter = other.root_iter;
-			this->dist_below_init_iter = other.dist_below_init_iter;
 			return *this;
 		}
 		reference operator*() const { return iter->access_value(); }
 		pointer operator->() const { return &(operator*()); }
 
 		TreeIterator& operator++() {
-			size_t distTravelled = 0; // distance below(pos) or above(neg) between current and next node
 			if (this->iter == nullptr) { // if for some reason null, increment to root
 				this->iter = this->root_iter;
 			} // depth-and-left first traversal of iterator
 			else { // go left if possible
 				if (this->iter->leftChild != nullptr) {
 					this->iter = this->iter->leftChild.get();
-					++distTravelled;
 
 				} // go right if possible
 				else if (this->iter->rightChild != nullptr) {
 					this->iter = this->iter->rightChild.get();
-					++distTravelled;
 
 				} // go up the tree if possible
 				else if (this->iter->parent != nullptr) {
@@ -122,7 +125,6 @@ private:
 							}
 							else {
 								prevIsLeftChild = (nodePtr == nodePtr->parent->leftChild.get());
-								--distTravelled;
 							}
 						}
 					}
@@ -131,7 +133,6 @@ private:
 					this->iter = nullptr;
 				}
 			}
-			this->dist_below_init_iter += distTravelled;
 			return *this;
 		}
 		TreeIterator operator++(int) {
@@ -141,12 +142,9 @@ private:
 		}
 
 		TreeIterator& operator--() {
-			size_t distTravelled = 0; // distance below(pos) or above(neg) between current and next node
 			if (this->iter == nullptr) {
 				// if we have nullptr iterator, we go to the rightmost child leaf of the tree
-				std::pair<TreeNode*, size_t> prevNodePair = this->root_iter->rightmostChildLeaf();
-				this->iter = prevNodePair.first;
-				distTravelled += prevNodePair.second;
+				this->iter = this->root_iter->rightmostChildLeaf();
 			} // complement of depth-and-left first traversal of iterator
 			else {
 				node_pointer parentNode = this->iter->parent;
@@ -155,16 +153,12 @@ private:
 					this->iter = nullptr;
 				} // else proceed with left siblings subtree if possible
 				else if (parentNode->leftChild != nullptr && parentNode->leftChild.get() != this->iter) {
-					std::pair<TreeNode*, size_t> prevNodePair = parentNode->leftChild->rightmostChildLeaf();
-					this->iter = prevNodePair.first;
-					distTravelled += prevNodePair.second;
+					this->iter = parentNode->leftChild->rightmostChildLeaf();
 				} // else go to parent node
 				else {
 					this->iter = parentNode;
-					--distTravelled;
 				}
 			}
-			this->dist_below_init_iter += distTravelled;
 			return *this;
 		}
 		TreeIterator operator--(int) {
@@ -189,22 +183,21 @@ private:
 public:
 
 	// constructors:
-	//explicit BinaryTree(const Compare& comp = Compare()); // default constructor (custom compare)
-	explicit BinaryTree() { } // default constructor
+	BinaryTree() = default; // default constructor
 	template <class InputIterator>
 	BinaryTree(InputIterator first, InputIterator last); // iterator constructor TODO
-	BinaryTree(const BinaryTree&); // copy constructor TODO
-	BinaryTree(BinaryTree&&); // move constructor TODO
-	//BinaryTree(initializer_list<value_type>, const Compare & = Compare()); // initializer_list constructor
+	BinaryTree(const BinaryTree& other); // copy constructor
+	BinaryTree(BinaryTree&&) = default; // move constructor
+	//BinaryTree(initializer_list<value_type>); // initializer_list constructor
 
 
 	// destructor:
-	~BinaryTree();
+	~BinaryTree() = default;
 
 
 	// assignment operators:
-	BinaryTree& operator=(const BinaryTree& other); // copy assignment TODO
-	BinaryTree& operator=(BinaryTree&& x); // move assignment TODO
+	BinaryTree& operator=(const BinaryTree& other); // copy assignment
+	BinaryTree& operator=(BinaryTree&& x) = default; // move assignment
 	//BinaryTree& operator=(initializer_list<value_type>); // initializer_list assignment
 
 
@@ -225,14 +218,16 @@ public:
 	const_reverse_iterator crend() const;
 
 
-	// capacity:
+	// capacity/measurements:
 	bool empty() const; // to check if tree is empty
 	size_t size() const; // return number of elements in the tree
 	size_t height() const; // return the height of the tree TODO
+	size_t subtreeSize(const_iterator position) const; // return size of the subtree (position node included)
+	size_t subtreeSize(const value_type& value) const;
 
 
-	// root access:
-	TreeNode* get_root() const; // to access root of the tree
+	// root value access:
+	value_type get_root() const; // to access value at the root of the tree
 
 
 	// emplacement:
@@ -254,7 +249,7 @@ public:
 	iterator erase(const_iterator position); // erase iterator location (and subtree?) TODO
 	size_t erase(const value_type& x); // erase value location (and subtree?) TODO
 	iterator erase(const_iterator first, const_iterator last); // erase between iterators TODO
-	void swap(BinaryTree& second); // swap this tree with second tree TODO
+	void swap(BinaryTree& second); // swap this tree with second tree
 	void clear(); // clear tree TODO
 
 
@@ -267,7 +262,7 @@ public:
 
 	// friends:
 	template <class T>
-	friend void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit); // TODO
+	friend void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit);
 
 };
 
@@ -300,10 +295,10 @@ void swap(BinaryTree<T>& lhs, BinaryTree<T>& rhs);
 
 
 template <class T>
-void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit); // TODO
+void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit);
 
 template <class T>
-void printTree(std::ostream& os, BinaryTree<T>& tree); // TODO
+void printTree(std::ostream& os, BinaryTree<T>& tree);
 
 
 

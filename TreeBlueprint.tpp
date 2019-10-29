@@ -83,6 +83,14 @@ typename TreeBlueprint<T>::TreeNode* TreeBlueprint<T>::get_root() const {
 
 
 template<class T>
+void TreeBlueprint<T>::swap(TreeBlueprint<T>& second) {
+	using std::swap;
+
+	swap(this->root, second.root);
+	swap(this->_size, second._size);
+}
+
+template<class T>
 typename TreeBlueprint<T>::iterator TreeBlueprint<T>::find(const value_type& value) {
 
 	for (iterator it = this->begin(); it != this->end(); ++it) {

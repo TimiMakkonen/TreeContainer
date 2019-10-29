@@ -40,6 +40,12 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 ### Version History:
 
+#### Version 0.6.0:
+
+* Added swap, height, subtreeSize and bunch of assignments/constructors for BinaryTree.
+* Added couple constructors and subtreeSize method for BinaryTree::TreeNode.
+* Cleaned up code slightly.
+
 #### Version 0.5.5:
 
 Added presentable printing functionality for BinaryTree.

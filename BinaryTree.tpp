@@ -10,7 +10,21 @@
 #include "BinaryTree.h"
 
 template<class T>
+BinaryTree<T>::TreeNode::TreeNode(const TreeNode& other, TreeNode* const parent)
+	: parent(parent),
+	leftChild(other.leftChild ? std::make_unique<TreeNode>(*(other.leftChild), this) : nullptr),
+	rightChild(other.rightChild ? std::make_unique<TreeNode>(*(other.rightChild), this) : nullptr)
+	{ }
+
+template<class T>
 BinaryTree<T>::TreeNode::TreeNode(const value_type& value, TreeNode* const parent) : data(value), parent(parent) {}
+
+template<class T>
+BinaryTree<T>::TreeNode::TreeNode(const TreeNode& other)
+	: parent(nullptr),
+	leftChild(other.leftChild ? std::make_unique<TreeNode>(*(other.leftChild), this) : nullptr),
+	rightChild(other.rightChild ? std::make_unique<TreeNode>(*(other.rightChild), this) : nullptr)
+	{ }
 
 template<class T>
 typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::leftmostChild() {
@@ -25,29 +39,62 @@ typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::leftmostChild() {
 }
 
 template<class T>
-std::pair<typename BinaryTree<T>::TreeNode*, size_t> BinaryTree<T>::TreeNode::rightmostChildLeaf() {
-	size_t distanceTravelled = 0;
+typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::rightmostChildLeaf() {
 	TreeNode* currentNode = this;
 	bool leafNotFound = true;
 	while (leafNotFound) {
 		if (currentNode->rightChild != nullptr) {
 			currentNode = currentNode->rightChild.get();
-			++distanceTravelled;
 		}
 		else if (currentNode->leftChild != nullptr) {
 			currentNode = currentNode->leftChild.get();
-			++distanceTravelled;
 		}
 		else {
 			leafNotFound = false;
 		}
 	}
-	return std::pair<TreeNode*, size_t>(currentNode, distanceTravelled);
+	return currentNode;
 }
 
+template<class T>
+size_t BinaryTree<T>::TreeNode::subtreeSize() {
+	size_t subSize = 1;
+
+	// non-recursive depth-first traversal
+	TreeNode* currentNode = this;
+	std::stack<TreeNode*> nodeStack;
+	nodeStack.push(currentNode);
+
+	while (!nodeStack.empty()) {
+		currentNode = nodeStack.top();
+		nodeStack.pop();
+
+		if (currentNode->rightChild != nullptr) {
+			++subSize;
+			nodeStack.push(currentNode->rightChild.get());
+		}
+		if (currentNode->leftChild != nullptr) {
+			++subSize;
+			nodeStack.push(currentNode->leftChild.get());
+		}
+	}
+	return subSize;
+}
 
 template<class T>
-BinaryTree<T>::~BinaryTree() {
+BinaryTree<T>::BinaryTree(const BinaryTree& other) 
+	: _size(other._size), 
+	root(other.root ? std::make_unique<TreeNode>(*(other.root)) : nullptr)
+	{ }
+
+template<class T>
+BinaryTree<T>& BinaryTree<T>::operator=(const BinaryTree& other) { // TODO
+	
+	if (this != &other) {
+		root.reset(other.root ? std::make_unique<TreeNode>(*(other.root)) : nullptr);
+		this->_size = other._size;
+	}
+	return *this;
 }
 
 template<class T>
@@ -121,8 +168,54 @@ size_t BinaryTree<T>::size() const {
 }
 
 template<class T>
-typename BinaryTree<T>::TreeNode* BinaryTree<T>::get_root() const {
-	return this->root.get();
+size_t BinaryTree<T>::height() const {
+	size_t treeHeight = 0;
+
+	if (this->root != nullptr) {
+
+		// non-recursive depth first traversal
+		std::pair<TreeNode*, size_t> nodePair(this->root.get(), 0);
+		std::stack<std::pair<TreeNode*, size_t> > nodeStack;
+		nodeStack.push(nodePair);
+
+		while (!nodeStack.empty()) {
+			nodePair = nodeStack.top();
+			nodeStack.pop();
+
+			if (nodePair.first->rightChild != nullptr) {
+				nodeStack.push(std::pair<TreeNode*, size_t>(nodePair.first->rightChild.get(), nodePair.second + 1));
+			}
+			if (nodePair.first->leftChild != nullptr) {
+				nodeStack.push(std::pair<TreeNode*, size_t>(nodePair.first->leftChild.get(), nodePair.second + 1));
+			}
+			if (nodePair.second > treeHeight) {
+				treeHeight = nodePair.second;
+			}
+		}
+	}
+	return treeHeight;
+}
+
+template<class T>
+size_t BinaryTree<T>::subtreeSize(const_iterator position) const {
+	return position.get_iter()->subtreeSize();
+}
+
+template<class T>
+size_t BinaryTree<T>::subtreeSize(const value_type& value) const {
+	
+	const_iterator it = this->find(value);
+	if (it == this->end()) {
+		return 0;
+	}
+	else {
+		return this->subtreeSize(it);
+	}
+}
+
+template<class T>
+T BinaryTree<T>::get_root() const {
+	return *(this->begin());
 }
 
 template<class T> // insert value into tree (to leftmost location)
@@ -191,7 +284,14 @@ std::pair<typename BinaryTree<T>::iterator, bool>
 	}
 }
 
+template<class T>
+void BinaryTree<T>::swap(BinaryTree<T>& second) {
 
+	using std::swap;
+
+	swap(this->root, second.root);
+	swap(this->_size, second._size);
+}
 
 template<class T>
 typename BinaryTree<T>::iterator BinaryTree<T>::find(const value_type& value) {
@@ -246,7 +346,8 @@ std::ostream& operator<<(std::ostream& os, typename BinaryTree<T>::TreeIterator&
 
 template<class T>
 bool operator==(const BinaryTree<T>& lhs, const BinaryTree<T>& rhs) {
-	return (lhs->get_root() == rhs->get_root());
+	using std::equal;
+	return (lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template<class T>
@@ -350,31 +451,7 @@ void printTree(std::ostream& os, typename BinaryTree<T>::const_iterator tree_cit
 
 
 template<class T>
-void printTree(std::ostream& os, BinaryTree<T>& tree) { // TODO
-	
-	/*for (typename BinaryTree<T>::const_iterator it = tree.cbegin(); it != tree.cend(); ++it) {
-		os << *it << " ";
-	}
-
-	os << "\n";
-	std::string preNodeStr = "+---";
-	std::string spaceBeforeStr = "|   ";
-
-	typename BinaryTree<T>::const_iterator it = tree.cbegin();
-	if (it != tree.cend()) {
-		os << *it << '\n';
-		++it;
-		size_t prevDistBelow = 0;
-		size_t currDistBelow = 0;
-		for (; it != tree.cend(); ++it) {
-			currDistBelow = it.dist_below();
-			for (size_t i = 1; i < currDistBelow; ++i) {
-				os << spaceBeforeStr;
-			}
-			os << preNodeStr << *it << '\n';
-			prevDistBelow = currDistBelow;
-		}
-	}*/
+void printTree(std::ostream& os, BinaryTree<T>& tree) {
 
 	printTree<T>(os, tree.cbegin());
 }
