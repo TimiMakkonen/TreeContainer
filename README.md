@@ -40,6 +40,13 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 ### Version History:
 
+#### Version 0.7.0:
+
+* Changed project from Visual Studio solution to static CMake library.
+* Added googletest to get started with proper testing.
+* Previous main function (preliminary tests) can now be found in examples/BinaryTree_Examples.cpp . (to be turned into proper tests)
+
+
 #### Version 0.6.0:
 
 * Added swap, height, subtreeSize and bunch of assignments/constructors for BinaryTree.
@@ -66,3 +73,4 @@ BlueprintTree is mostly completed blueprint to quickly start the work on future 
 * Add Multitree(tree with multiple children).
 * Add BST(Binary Search Tree).
 * Add FamilyTree(tree with 2 parents per node).
+* Start testing.

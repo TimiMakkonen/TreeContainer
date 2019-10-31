@@ -1,8 +1,8 @@
 
 #include <iostream>
-
-#include "BinaryTree.h"
 #include <vector>
+
+#include "../BinaryTree.h"
 
 // Excuse the crudeness of these preliminary test.
 // This is just a playground for me to check if/how everything works.
@@ -107,18 +107,11 @@ void preliminaryTests() {
 	std::cout << "\n------------------------\n";
 }
 
-
-
-
 int main() {
 
 	preliminaryTests();
-
+	
 	return 0;
 }
-
-
-
-
 
 
