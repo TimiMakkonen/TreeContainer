@@ -151,9 +151,9 @@ public:
 	iterator emplace_at(const_iterator position, Args&& ... args); // construct and insert an element in a specified location
 
 	// insertion:
-	std::pair<iterator, bool> insert(const value_type& x); // insert value into tree
+	std::pair<iterator, bool> insert(const value_type& value); // insert value into tree
 	std::pair<iterator, bool> insert_at(const value_type& x, const value_type& parent); // insert value into tree in a specified location (parent)
-	iterator insert_at(const_iterator position, const value_type& x); // insert value into tree in a specified location (iterator)
+	iterator insert_at(const_iterator position, const value_type& value); // insert value into tree in a specified location (iterator)
 	template <class InputIterator>
 	void insert(InputIterator first, InputIterator last); // iterator insertion
 	//void insert(initializer_list<value_type>); // initializer_list insertion

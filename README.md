@@ -40,17 +40,22 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 ### Version History:
 
+#### Version 0.7.1:
+
+* Added 'emplace' and changed 'insert' in BinaryTree.
+* Fixed error in 'CMakeLists.txt' to make sure gtesting can actually be done. (testing not properly started yet)
+
 #### Version 0.7.0:
 
 * Changed project from Visual Studio solution to static CMake library.
 * Added googletest to get started with proper testing.
-* Previous main function (preliminary tests) can now be found in examples/BinaryTree_Examples.cpp . (to be turned into proper tests)
+* Previous main function (preliminary tests) can now be found in: examples/BinaryTree_Examples.cpp . (to be turned into proper tests)
 
 
 #### Version 0.6.0:
 
-* Added swap, height, subtreeSize and bunch of assignments/constructors for BinaryTree.
-* Added couple constructors and subtreeSize method for BinaryTree::TreeNode.
+* Added 'swap', 'height', 'subtreeSize' and bunch of assignments/constructors for BinaryTree.
+* Added couple constructors and 'subtreeSize' method for BinaryTree::TreeNode.
 * Cleaned up code slightly.
 
 #### Version 0.5.5:
@@ -60,7 +65,7 @@ Added presentable printing functionality for BinaryTree.
 #### Version 0.5.0:
 
 Initial version of BinaryTree and BlueprintTree.
-Basic functionality of BinaryTree mostly in working condition (iterator, find and insertion seem to work, not properly tested).
+Basic functionality of BinaryTree mostly in working condition ('iterator', 'find' and 'insert' seem to work, not properly tested).
 
 BlueprintTree is mostly completed blueprint to quickly start the work on future tree structures, as planned, when done with BinaryTree.
 

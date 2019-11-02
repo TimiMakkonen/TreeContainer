@@ -38,7 +38,7 @@ private:
 
 		// node constructos:
 		TreeNode() = default;
-		TreeNode(const value_type& value, TreeNode* const parent);
+		TreeNode(value_type value, TreeNode* const parent);
 		TreeNode(const TreeNode& other);
 		TreeNode(TreeNode&&) = default;
 
@@ -232,15 +232,15 @@ public:
 
 	// emplacement:
 	template <class...	 Args>
-	std::pair<iterator, bool> emplace(Args&& ... args); // construct and insert an element TODO
+	iterator emplace(Args&& ... args); // construct and insert an element
 	template <class... Args>
 	iterator emplace_at(const_iterator position, Args&& ... args); // construct and insert an element in a specified location TODO
 
 	// insertion:
-	iterator insert(const value_type& value); // insert value into tree (to leftmost location)
+	iterator insert(value_type value); // insert value into tree (to leftmost location)
 	// insert value into tree in a specified location (parent)
 	std::pair<iterator, bool> insert_at(const value_type& value, const value_type& parentValue, const bool tryToInsertLeftFirst = true);
-	iterator insert_at(const_iterator position, const value_type& x); // insert value into tree in a specified location (iterator) TODO
+	iterator insert_at(const_iterator position, const value_type& value); // insert value into tree in a specified location (iterator) TODO
 	template <class InputIterator>
 	void insert(InputIterator first, InputIterator last); // iterator insertion TODO
 	//void insert(initializer_list<value_type>); // initializer_list insertion

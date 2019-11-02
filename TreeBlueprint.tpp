@@ -81,7 +81,6 @@ typename TreeBlueprint<T>::TreeNode* TreeBlueprint<T>::get_root() const {
 	return this->root.get();
 }
 
-
 template<class T>
 void TreeBlueprint<T>::swap(TreeBlueprint<T>& second) {
 	using std::swap;

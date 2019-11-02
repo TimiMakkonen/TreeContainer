@@ -1,3 +1,4 @@
+#include "BinaryTree.h"
 #ifndef BINARYTREE_H
 #error __FILE__ should only be included from BinaryTree.h
 #endif
@@ -17,7 +18,7 @@ BinaryTree<T>::TreeNode::TreeNode(const TreeNode& other, TreeNode* const parent)
 	{ }
 
 template<class T>
-BinaryTree<T>::TreeNode::TreeNode(const value_type& value, TreeNode* const parent) : data(value), parent(parent) {}
+BinaryTree<T>::TreeNode::TreeNode(value_type value, TreeNode* const parent) : data(std::move(value)), parent(parent) {}
 
 template<class T>
 BinaryTree<T>::TreeNode::TreeNode(const TreeNode& other)
@@ -215,25 +216,42 @@ size_t BinaryTree<T>::subtreeSize(const value_type& value) const {
 
 template<class T>
 T BinaryTree<T>::get_root() const {
-	return *(this->begin());
+	if (this->root != nullptr) {
+		return *(this->begin());
+	}
+	else {
+		return NULL;
+	}
+	
 }
 
-template<class T> // insert value into tree (to leftmost location)
-typename BinaryTree<T>::iterator BinaryTree<T>::insert(const value_type& value) {
-
-
+template<class T>
+template <class... Args> // emplace (create and insert) value into tree (to leftmost location)
+typename BinaryTree<T>::iterator BinaryTree<T>::emplace(Args&& ...args) {
+	
 	if (this->root == nullptr) {
-		this->root = std::make_unique<TreeNode>(value, nullptr);
+		this->root = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), nullptr);
 		++(this->_size);
 		return iterator(this->root, this->root);
 	}
 	else {
 
 		TreeNode* parentNode = this->root.get()->leftmostChild();
-		parentNode->leftChild = std::make_unique<TreeNode>(value, parentNode);
+		parentNode->leftChild = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
 		++(this->_size);
 		return iterator(parentNode->leftChild, this->root);
 	}
+}
+
+template<class T>
+template<class ...Args>
+typename BinaryTree<T>::iterator BinaryTree<T>::emplace_at(const_iterator position, Args&& ...args) {
+	return iterator();
+}
+
+template<class T>
+typename BinaryTree<T>::iterator BinaryTree<T>::insert(value_type value) {
+	return this->emplace(std::move(value));
 }
 
 template<class T>
