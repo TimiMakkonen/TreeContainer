@@ -2,7 +2,7 @@
 
 ### Summary:
 
-The purpose of this repository is to contain a bunch of custom-made tree-related C++ STL compatible tree containers.
+The purpose of this repository is to contain a bunch of custom-made tree-related C++11 STL compatible tree containers.
 Currently the repository contains partly finished BinaryTree container (tree with left and right children) and BlueprintTree to conveniently store common bare-bone interface of tree like structures to aid with making custom and future tree containers.
 Future plans include: MultiTree(tree with multiple children), BST and FamilyTree(tree with 2 parents per node).
 
@@ -38,7 +38,26 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 ---
 
+### How to use:
+
+Minimum C++ version required: C++11.
+
+The easiest way to use one of the tree classes, is to simply copy class header '.h' with its template implementation '.tpp' (and possibly '.cpp' too, if it is not empty) into your project.
+For example, to use BinaryTree; copy 'BinaryTree.h' and 'BinaryTree.tpp' into your project. ('BinaryTree.cpp' is empty for now)
+
+If you want to clone this git repository, use 'git clone --recurse-submodules --remote-submodules https://github.com/TimiMakkonen/TreeContainer.git' or something similar to make sure that 'googletest' submodule gets cloned properly.
+
+---
+
 ### Version History:
+
+#### Version 0.8.0:
+
+* Added use instructions to 'README.md'.
+* Added/changed all insertion and emplacement methods to BinaryTree:
+	* Added 'insert_child' and 'insert_at' (and their left and right variants eg. insert_child_left) methods. (Original 'insert_at' method is now 'insert_child'.)
+	* Added emplacement versions of all insertion methods. (In fact, all insertion methods just forward their arguments to corresponding emplace equivalents.)
+	* Added erasure methods.
 
 #### Version 0.7.1:
 
@@ -74,7 +93,8 @@ BlueprintTree is mostly completed blueprint to quickly start the work on future 
 ### Fixes and features left to consider/implement:
 
 * Finish BinaryTree.
-* Add more to BlueprintTree if it makes sense.
+	* methods using initializer_list or inputIterator range
+* Add more to BlueprintTree if it makes sense (or consider removing it completely).
 * Add Multitree(tree with multiple children).
 * Add BST(Binary Search Tree).
 * Add FamilyTree(tree with 2 parents per node).

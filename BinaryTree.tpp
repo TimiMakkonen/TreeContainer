@@ -1,4 +1,10 @@
 #include "BinaryTree.h"
+#include "BinaryTree.h"
+#include "BinaryTree.h"
+#include "BinaryTree.h"
+#include "BinaryTree.h"
+#include "BinaryTree.h"
+#include "BinaryTree.h"
 #ifndef BINARYTREE_H
 #error __FILE__ should only be included from BinaryTree.h
 #endif
@@ -58,7 +64,7 @@ typename BinaryTree<T>::TreeNode* BinaryTree<T>::TreeNode::rightmostChildLeaf() 
 }
 
 template<class T>
-size_t BinaryTree<T>::TreeNode::subtreeSize() {
+size_t BinaryTree<T>::TreeNode::subtree_size() {
 	size_t subSize = 1;
 
 	// non-recursive depth-first traversal
@@ -80,6 +86,15 @@ size_t BinaryTree<T>::TreeNode::subtreeSize() {
 		}
 	}
 	return subSize;
+}
+
+template<class T>
+template<class InputIterator>
+BinaryTree<T>::BinaryTree(InputIterator first, InputIterator last) {
+
+	for (InputIterator it = first; it != last; ++it) {
+		this->insert(*it);
+	}
 }
 
 template<class T>
@@ -198,19 +213,26 @@ size_t BinaryTree<T>::height() const {
 }
 
 template<class T>
-size_t BinaryTree<T>::subtreeSize(const_iterator position) const {
-	return position.get_iter()->subtreeSize();
+size_t BinaryTree<T>::subtree_size(const_iterator position) const {
+
+	TreeNode* positionPtr = position.get_iter();
+	if (positionPtr == nullptr) {
+		return 0;
+	}
+	else {
+		return position.get_iter()->subtree_size();
+	}
 }
 
 template<class T>
-size_t BinaryTree<T>::subtreeSize(const value_type& value) const {
+size_t BinaryTree<T>::subtree_size(const value_type& value) const {
 	
 	const_iterator it = this->find(value);
 	if (it == this->end()) {
 		return 0;
 	}
 	else {
-		return this->subtreeSize(it);
+		return this->subtree_size(it);
 	}
 }
 
@@ -245,8 +267,289 @@ typename BinaryTree<T>::iterator BinaryTree<T>::emplace(Args&& ...args) {
 
 template<class T>
 template<class ...Args>
-typename BinaryTree<T>::iterator BinaryTree<T>::emplace_at(const_iterator position, Args&& ...args) {
-	return iterator();
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_child(const_iterator parentPosition, Args&& ...args) {
+
+	return this->emplace_child_left(parentPosition, std::forward<Args>(args)...);
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_child(const value_type& parentValue, Args&& ...args) {
+
+	return this->emplace_child_left(parentValue, std::forward<Args>(args)...);
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::emplace_child_left(const_iterator parentPosition, Args&& ...args) {
+	
+	if (parentPosition == this->end()) {
+		// if end == begin, root must be nullptr, so we insert new root
+		if (parentPosition == this->begin()) {
+			iterator newRootNodeIt = this->emplace(std::forward<Args>(args)...);
+			return std::pair<iterator, bool>(newRootNodeIt, true);
+		}
+		else {
+			return std::pair<iterator, bool>(this->end(), false);
+		}
+	}
+	else {
+		TreeNode* parentNode = parentPosition.get_iter();
+		bool insertionWorked;
+		iterator returnedIt; // if insertion worked, parent, else added child iterator
+		
+		if (parentNode->leftChild == nullptr) {
+			parentNode->leftChild = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+			++(this->_size);
+			insertionWorked = true;
+			returnedIt = iterator(parentNode->leftChild, this->root);
+		}
+		else if (parentNode->rightChild == nullptr) {
+			parentNode->rightChild = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+			++(this->_size);
+			insertionWorked = true;
+			returnedIt = iterator(parentNode->rightChild, this->root);
+		}
+		else {
+			// if parent already has 2 children
+			insertionWorked = false;
+			returnedIt = iterator(parentNode, this->root);
+		}
+		
+		return std::pair<iterator, bool>(returnedIt, insertionWorked);
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_child_left(const value_type& parentValue, Args&& ...args) {
+	
+	iterator parentNodeIt = this->find(parentValue);
+	if (parentNodeIt == this->end()) {
+		return std::pair<iterator, bool>(this->end(), false);
+	}
+	else {
+		return this->emplace_child_left(parentNodeIt, std::forward<Args>(args)...);
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::emplace_child_right(const_iterator parentPosition, Args&& ...args) {
+
+	if (parentPosition == this->end()) {
+		// if end == begin, root must be nullptr, so we insert new root
+		if (parentPosition == this->begin()) {
+			iterator newRootNodeIt = this->emplace(std::forward<Args>(args)...);
+			return std::pair<iterator, bool>(newRootNodeIt, true);
+		}
+		else {
+			return std::pair<iterator, bool>(this->end(), false);
+		}
+	}
+	else {
+		TreeNode* parentNode = parentPosition.get_iter();
+		bool insertionWorked;
+		iterator returnedIt; // if insertion worked, parent, else added child iterator
+		
+		if (parentNode->rightChild == nullptr) {
+			parentNode->rightChild = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+			++(this->_size);
+			insertionWorked = true;
+			returnedIt = iterator(parentNode->rightChild, this->root);
+		}
+		else if (parentNode->leftChild == nullptr) {
+			parentNode->leftChild = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+			++(this->_size);
+			insertionWorked = true;
+			returnedIt = iterator(parentNode->leftChild, this->root);
+		}
+		else {
+			// if parent already has 2 children
+			insertionWorked = false;
+			returnedIt = iterator(parentNode, this->root);
+		}
+		
+		return std::pair<iterator, bool>(returnedIt, insertionWorked);
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_child_right(const value_type& parentValue, Args&& ...args) {
+
+	iterator parentNodeIt = this->find(parentValue);
+	if (parentNodeIt == this->end()) {
+		return std::pair<iterator, bool>(this->end(), false);
+	}
+	else {
+		return this->emplace_child_right(parentNodeIt, std::forward<Args>(args)...);
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_at(const_iterator position, Args&& ...args) {
+
+	return this->emplace_at_left(position, std::forward<Args>(args)...);
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_at(const value_type& originalValue, Args&& ...args) {
+
+	return this->emplace_at_left(originalValue, std::forward<Args>(args)...);
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::emplace_at_left(const_iterator position, Args&& ...args) {
+
+	if (position == this->end()) {
+		// if end == begin, root must be nullptr, so we insert new root
+		if (position == this->begin()) {
+			iterator newRootNodeIt = this->emplace(std::forward<Args>(args)...);
+			return std::pair<iterator, bool>(newRootNodeIt, true)
+		}
+		else {
+			return std::pair<iterator, bool>(this->end(), false);
+		}
+	}
+	else { // main idea: make new unique_ptr<TreeNode>, change parents, and swap children around
+		TreeNode* originalNode = position.get_iter();
+		TreeNode* parentNode = originalNode->parent;
+
+		// make newNode, set its parent to parentnode
+		auto newNodePointer = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+
+		// set originalNode's parent into newNode
+		originalNode->parent = newNodePointer.get();
+
+		// if parentNode == nullptr, we should be inserting to root position
+		if (parentNode == nullptr) {
+			// child relationships: tree->root=o, n->child=null, (local=n)
+			using std::swap;
+			swap(newNodePointer->leftChild, this->root);
+			// child relationships: tree->root=null, n->child=o, (local=n)
+			swap(newNodePointer, this->root);
+			// child relationships: tree->root=n, n->child=o, (local=null) GOOD
+
+			++(this->_size);
+			return std::pair<iterator, bool>(this->begin(), true);
+		}
+		else {
+			bool isLeftChild = (parentNode->leftChild.get() == originalNode);
+
+			// child relationships: p->child=o, n->child=null, (local=n)
+			using std::swap;
+			swap(newNodePointer->leftChild, (isLeftChild ? parentNode->leftChild : parentNode->rightChild));
+			// child relationships: p->child=null, n->child=o, (local=n)
+			swap(newNodePointer, (isLeftChild ? parentNode->leftChild : parentNode->rightChild));
+			// child relationships: p->child=n, n->child=o, (local=null) GOOD
+
+			++(this->_size);
+			return std::pair<iterator, bool>(iterator((isLeftChild ? parentNode->leftChild : parentNode->rightChild), this->root), true);
+		}
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::emplace_at_left(const value_type& originalValue, Args&& ...args) {
+
+	iterator originalNodeIt = this->find(originalValue);
+	if (originalNodeIt == this->end()) {
+		return std::pair<iterator, bool>(this->end(), false);
+	}
+	else {
+		return this->emplace_at_left(originalNodeIt, std::forward<Args>(args)...);
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::emplace_at_right(const_iterator position, Args&& ...args) {
+
+	if (position == this->end()) {
+		// if end == begin, root must be nullptr, so we insert new root
+		if (position == this->begin()) {
+			iterator newRootNodeIt = this->emplace(std::forward<Args>(args)...);
+			return std::pair<iterator, bool>(newRootNodeIt, true)
+		}
+		else {
+			return std::pair<iterator, bool>(this->end(), false);
+		}
+	}
+	else { // main idea: make new unique_ptr<TreeNode>, change parents, and swap children around
+		TreeNode* originalNode = position.get_iter();
+		TreeNode* parentNode = originalNode->parent;
+
+		// make newNode, set its parent to parentnode
+		auto newNodePointer = std::make_unique<TreeNode>(value_type(std::forward<Args>(args)...), parentNode);
+
+		// set originalNode's parent into newNode
+		originalNode->parent = newNodePointer.get();
+
+		// if parentNode == nullptr, we should be inserting to root position
+		if (parentNode == nullptr) {
+			// child relationships: tree->root=o, n->child=null, (local=n)
+			using std::swap;
+			swap(newNodePointer->rightChild, this->root);
+			// child relationships: tree->root=null, n->child=o, (local=n)
+			swap(newNodePointer, this->root);
+			// child relationships: tree->root=n, n->child=o, (local=null) GOOD
+
+			++(this->_size);
+			return std::pair<iterator, bool>(this->begin(), true);
+		}
+		else {
+			bool isLeftChild = (parentNode->leftChild.get() == originalNode);
+
+			// child relationships: p->child=o, n->child=null, (local=n)
+			using std::swap;
+			swap(newNodePointer->rightChild, (isLeftChild ? parentNode->leftChild : parentNode->rightChild));
+			// child relationships: p->child=null, n->child=o, (local=n)
+			swap(newNodePointer, (isLeftChild ? parentNode->leftChild : parentNode->rightChild));
+			// child relationships: p->child=n, n->child=o, (local=null) GOOD
+
+			++(this->_size);
+			return std::pair<iterator, bool>(iterator((isLeftChild ? parentNode->leftChild : parentNode->rightChild), this->root), true);
+		}
+	}
+}
+
+template<class T>
+template<class ...Args>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::emplace_at_right(const value_type& originalValue, Args&& ...args) {
+
+	iterator originalNodeIt = this->find(originalValue);
+	if (originalNodeIt == this->end()) {
+		return std::pair<iterator, bool>(this->end(), false);
+	}
+	else {
+		return this->emplace_at_right(originalNodeIt, std::forward<Args>(args)...);
+	}
+}
+
+template<class T>
+template<class InputIterator>
+void BinaryTree<T>::insert(InputIterator first, InputIterator last) {
+
+	for (InputIterator it = first; it != last; ++it) {
+		this->insert(*it);
+	}
 }
 
 template<class T>
@@ -256,49 +559,116 @@ typename BinaryTree<T>::iterator BinaryTree<T>::insert(value_type value) {
 
 template<class T>
 std::pair<typename BinaryTree<T>::iterator, bool>
-			BinaryTree<T>::insert_at(const value_type& value, 
-									const value_type& parentValue, 
-									const bool tryToInsertLeftFirst/* = true*/) {
+			BinaryTree<T>::insert_child(const_iterator parentPosition, value_type value) {
+	
+	return this->emplace_child(parentPosition, std::move(value))
+}
 
-	iterator parentNodeIt = this->find(parentValue);
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool>
+			BinaryTree<T>::insert_child(const value_type& parentValue, value_type value) {
 
-	if (parentNodeIt == this->end()) {
-		return std::pair<iterator, bool>(this->end(), false);
-	}
-	else {
-		TreeNode* parentNode = parentNodeIt.get_iter();
-		if (tryToInsertLeftFirst) {
-			if (parentNode->leftChild == nullptr) {
-				parentNode->leftChild = std::make_unique<TreeNode>(value, parentNode);
-				++(this->_size);
-				return std::pair<iterator, bool>(iterator(parentNode->leftChild, this->root), true);
-			}
-			else if (parentNode->rightChild == nullptr) {
-				parentNode->rightChild = std::make_unique<TreeNode>(value, parentNode);
-				++(this->_size);
-				return std::pair<iterator, bool>(iterator(parentNode->rightChild, this->root), true);
-			}
-			else {
-				// if parent already has 2 children
-				return std::pair<iterator, bool>(parentNodeIt, false);
-			}
+	return this->emplace_child(parentValue, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> BinaryTree<T>::insert_child_left(const_iterator parentPosition, value_type value) {
+
+	return this->emplace_child_left(parentPosition, std::move(value))
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> BinaryTree<T>::insert_child_left(const value_type& parentValue, value_type value) {
+
+	return this->emplace_child_left(parentValue, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> BinaryTree<T>::insert_child_right(const_iterator parentPosition, value_type value) {
+
+	return this->emplace_child_right(parentPosition, std::move(value))
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> BinaryTree<T>::insert_child_right(const value_type& parentValue, value_type value) {
+
+	return this->emplace_child_right(parentValue, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::insert_at(const_iterator position, value_type value) {
+	
+	return this->emplace_at(position, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool> 
+			BinaryTree<T>::insert_at(const value_type& originalValue, value_type value) {
+
+	return this->emplace_at(originalValue, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool>
+BinaryTree<T>::insert_at_left(const_iterator position, value_type value) {
+
+	return this->emplace_at_left(position, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool>
+BinaryTree<T>::insert_at_left(const value_type& originalValue, value_type value) {
+
+	return this->emplace_at_left(originalValue, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool>
+BinaryTree<T>::insert_at_right(const_iterator position, value_type value) {
+
+	return this->emplace_at_right(position, std::move(value));
+}
+
+template<class T>
+std::pair<typename BinaryTree<T>::iterator, bool>
+BinaryTree<T>::insert_at_right(const value_type& originalValue, value_type value) {
+
+	return this->emplace_at_right(originalValue, std::move(value));
+}
+
+template<class T>
+size_t BinaryTree<T>::erase(const_iterator position) {
+	size_t numOfnodes = subtree_size(position);
+	if (numOfnodes != 0) {
+		TreeNode* nodeToErase = position.get_iter();
+		TreeNode* parentNode = nodeToErase->parent;
+		if (parentNode == nullptr) {
+			// should be root node
+			this->clear();
 		}
 		else {
-			if (parentNode->rightChild == nullptr) {
-				parentNode->rightChild = std::make_unique<TreeNode>(value, parentNode);
-				++(this->_size);
-				return std::pair<iterator, bool>(iterator(parentNode->rightChild, this->root), true);
-			}
-			else if (parentNode->leftChild == nullptr) {
-				parentNode->leftChild = std::make_unique<TreeNode>(value, parentNode);
-				++(this->_size);
-				return std::pair<iterator, bool>(iterator(parentNode->leftChild, this->root), true);
+			if (parentNode->leftChild.get() == nodeToErase) {
+				parentNode->leftChild.reset();
 			}
 			else {
-				// if parent already has 2 children
-				return std::pair<iterator, bool>(parentNodeIt, false);
+				parentNode->rightChild.reset();
 			}
+			this->_size -= numOfnodes;
 		}
+	}
+	return numOfnodes;
+}
+
+template<class T>
+size_t BinaryTree<T>::erase(const value_type& value) {
+	
+	iterator nodeToEraseIt = this->find(value);
+	if (nodeToEraseIt == this->end()) {
+		return 0;
+	}
+	else {
+		return this->erase(nodeToEraseIt);
 	}
 }
 
@@ -309,6 +679,13 @@ void BinaryTree<T>::swap(BinaryTree<T>& second) {
 
 	swap(this->root, second.root);
 	swap(this->_size, second._size);
+}
+
+template<class T>
+void BinaryTree<T>::clear() {
+	
+	this->root.reset();
+	this->_size = 0;
 }
 
 template<class T>

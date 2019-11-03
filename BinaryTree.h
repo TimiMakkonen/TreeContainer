@@ -32,7 +32,7 @@ private:
 
 	public:
 		// node variables:
-		TreeNode* parent;
+		TreeNode* parent = nullptr;
 		std::unique_ptr<TreeNode> leftChild = nullptr;
 		std::unique_ptr<TreeNode> rightChild = nullptr;
 
@@ -46,13 +46,14 @@ private:
 
 		TreeNode* leftmostChild(); // to find leftmostChild
 		TreeNode* rightmostChildLeaf(); // to find rightmostChildLeaf
-		size_t subtreeSize(); // return number of elements in the subtree (this node included)
+		size_t subtree_size(); // return number of elements in the subtree (this node included)
 	};
 
 	// class variables:
 	std::unique_ptr<TreeNode> root = nullptr;
 	size_t _size = 0;
 
+	// NOTE: iterator might not behave well after insertion/erasure (especially change of root)
 	template <class IterType>
 	class TreeIterator {
 
@@ -79,8 +80,10 @@ private:
 								: iter(i.get()), root_iter(root_i.get()) { }
 		TreeIterator(const TreeIterator& other) 
 				: iter(other.iter), root_iter(other.root_iter) { }
-		TreeIterator(const node_pointer& i, const node_pointer& root_i)
+		TreeIterator(node_pointer i, node_pointer root_i)
 			: iter(i), root_iter(root_i) { }
+		TreeIterator(node_pointer i, const std::unique_ptr<TreeNode>& root_i)
+			: iter(i), root_iter(root_i.get()) { }
 
 		// conversion to const iterator
 		operator TreeIterator<const value_type>() { return TreeIterator<const value_type>(iter, root_iter); }
@@ -170,7 +173,7 @@ private:
 
 		// iterator comparison operators:
 		friend bool operator==(const TreeIterator& lhs, const TreeIterator& rhs) {
-			return (lhs.iter == rhs.iter);
+			return (lhs.iter == rhs.iter && lhs.root_iter == rhs.root_iter);
 		}
 		friend bool operator!=(const TreeIterator& lhs, const TreeIterator& rhs) {
 			return !operator==(lhs, rhs);
@@ -185,7 +188,7 @@ public:
 	// constructors:
 	BinaryTree() = default; // default constructor
 	template <class InputIterator>
-	BinaryTree(InputIterator first, InputIterator last); // iterator constructor TODO
+	BinaryTree(InputIterator first, InputIterator last); // iterator constructor (basic list style)
 	BinaryTree(const BinaryTree& other); // copy constructor
 	BinaryTree(BinaryTree&&) = default; // move constructor
 	//BinaryTree(initializer_list<value_type>); // initializer_list constructor
@@ -222,35 +225,82 @@ public:
 	bool empty() const; // to check if tree is empty
 	size_t size() const; // return number of elements in the tree
 	size_t height() const; // return the height of the tree TODO
-	size_t subtreeSize(const_iterator position) const; // return size of the subtree (position node included)
-	size_t subtreeSize(const value_type& value) const;
+	size_t subtree_size(const_iterator position) const; // return size of the subtree (position node included)
+	size_t subtree_size(const value_type& value) const;
 
 
 	// root value access:
 	value_type get_root() const; // to access value at the root of the tree
 
 
+
 	// emplacement:
 	template <class...	 Args>
-	iterator emplace(Args&& ... args); // construct and insert an element
+	iterator emplace(Args&& ... args); // emplace value into tree (to leftmost location)
+
+	// emplace value into tree as a child of specified parent
+	// (Try specified child position first. Left is default, try the other if not possible.)
 	template <class... Args>
-	iterator emplace_at(const_iterator position, Args&& ... args); // construct and insert an element in a specified location TODO
+	std::pair<iterator, bool> emplace_child(const_iterator parentPosition, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_child(const value_type& parentValue, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_child_left(const_iterator parentPosition, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_child_left(const value_type& parentValue, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_child_right(const_iterator parentPosition, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_child_right(const value_type& parentValue, Args&& ... args);	
+
+	// emplace value into tree at specific location (replace location node and make it its child)
+	// (Try to insert original node into specified child position first. Left is default, try the other if not possible.)
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at(const_iterator position, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at(const value_type& originalValue, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at_left(const_iterator position, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at_left(const value_type& originalValue, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at_right(const_iterator position, Args&& ... args);
+	template <class... Args>
+	std::pair<iterator, bool> emplace_at_right(const value_type& originalValue, Args&& ... args);
+
+
 
 	// insertion:
 	iterator insert(value_type value); // insert value into tree (to leftmost location)
-	// insert value into tree in a specified location (parent)
-	std::pair<iterator, bool> insert_at(const value_type& value, const value_type& parentValue, const bool tryToInsertLeftFirst = true);
-	iterator insert_at(const_iterator position, const value_type& value); // insert value into tree in a specified location (iterator) TODO
+
+	// insert value into tree as a child of specified parent
+	std::pair<iterator, bool> insert_child(const_iterator parentPosition, value_type value);
+	std::pair<iterator, bool> insert_child(const value_type& parentValue, value_type value);
+	std::pair<iterator, bool> insert_child_left(const_iterator parentPosition, value_type value);
+	std::pair<iterator, bool> insert_child_left(const value_type& parentValue, value_type value);
+	std::pair<iterator, bool> insert_child_right(const_iterator parentPosition, value_type value);
+	std::pair<iterator, bool> insert_child_right(const value_type& parentValue, value_type value);
+
+	// insert value into tree at specific location (replace location node and make it its child)
+	std::pair<iterator, bool> insert_at(const_iterator position, value_type value);
+	std::pair<iterator, bool> insert_at(const value_type & originalValue, value_type value);
+	std::pair<iterator, bool> insert_at_left(const_iterator position, value_type value);
+	std::pair<iterator, bool> insert_at_left(const value_type & originalValue, value_type value);
+	std::pair<iterator, bool> insert_at_right(const_iterator position, value_type value);
+	std::pair<iterator, bool> insert_at_right(const value_type & originalValue, value_type value);
+
 	template <class InputIterator>
-	void insert(InputIterator first, InputIterator last); // iterator insertion TODO
+	void insert(InputIterator first, InputIterator last); // iterator insertion TODO: change to smarter insert?
 	//void insert(initializer_list<value_type>); // initializer_list insertion
 
+
+
 	// erasure:
-	iterator erase(const_iterator position); // erase iterator location (and subtree?) TODO
-	size_t erase(const value_type& x); // erase value location (and subtree?) TODO
-	iterator erase(const_iterator first, const_iterator last); // erase between iterators TODO
+	//Note: Stack overflow is unlikely to be a problem with trees. Problems may arise if tree extremely unbalanced, ie. similar to plain list.
+	size_t erase(const_iterator position); // erase iterator location and subtree
+	size_t erase(const value_type& value); // erase value location and subtree
 	void swap(BinaryTree& second); // swap this tree with second tree
-	void clear(); // clear tree TODO
+	void clear(); // clear tree
 
 
 	// operations:

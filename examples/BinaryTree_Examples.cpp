@@ -18,16 +18,16 @@ void preliminaryTests() {
 
 	myBinTree.insert(2); // 1 -> 2
 	myBinTree.insert(3); // 1 -> 2 -> 3
-	myBinTree.insert_at(4, 2); // 1 -> 2 -> (3, 4)
+	myBinTree.insert_child(2, 4); // 1 -> 2 -> (3, 4)
 
 	// insertion should fail, 2 has two children already
-	auto myResult = myBinTree.insert_at(5, 2);
+	auto myResult = myBinTree.insert_child(2, 5);
 	std::cout << "Did insertion (5 to 2) fail?: " << (myResult.second ? "No!" : "Yes!") << "\n\n";
 
-	myBinTree.insert_at(6, 3); // 1 -> 2 -> ((3 -> 6), 4)
-	myBinTree.insert_at(7, 4); // 1 -> 2 -> ((3 -> 6), (4 -> 7))
-	myBinTree.insert_at(8, 1); // 1 -> (2 -> ((3 -> 6), (4 -> 7)), 8)
-	myBinTree.insert_at(9, 8); // 1 -> (2 -> ((3 -> 6), (4 -> 7)), (8 -> 9))
+	myBinTree.insert_child(3, 6); // 1 -> 2 -> ((3 -> 6), 4)
+	myBinTree.insert_child(4, 7); // 1 -> 2 -> ((3 -> 6), (4 -> 7))
+	myBinTree.insert_child(1, 8); // 1 -> (2 -> ((3 -> 6), (4 -> 7)), 8)
+	myBinTree.insert_child(8, 9); // 1 -> (2 -> ((3 -> 6), (4 -> 7)), (8 -> 9))
 
 	std::cout << "Done with inserting ints to myBinTree...";
 
@@ -97,12 +97,12 @@ void preliminaryTests() {
 
 	std::cout << "Looping through elements of myBinTree printing their subtree sizes: \n";
 	for (auto it = myBinTree.begin(); it != myBinTree.end(); ++it) {
-		std::cout << *it << "(" << myBinTree.subtreeSize(it) << "), ";
+		std::cout << *it << "(" << myBinTree.subtree_size(it) << "), ";
 	}
 
 	std::cout << "\n------------------------\n";
 
-	std::cout << "myBinTree.subtreeSize(8): " << myBinTree.subtreeSize(8);
+	std::cout << "myBinTree.subtree_size(8): " << myBinTree.subtree_size(8);
 
 	std::cout << "\n------------------------\n";
 }
