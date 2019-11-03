@@ -27,10 +27,10 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 * BinaryTree:
   * Common tree structure, where each node has up to 2 children (left & right).
-  * Partly finished state:
-    * Mostly working STL compliant bidirectional iterator (not properly tested).
-    * Working basic insertion and find operations.
-	* Working print functionality.
+  * Mostly finished state (not properly tested yet):
+    * STL compliant bidirectional iterator.
+    * Most of the common STL methods can be found. (insert, emplace, erase, find, etc.)
+    * Basic print functionality.
   * Based on unique_ptr.
   * NOT THREAD SAFE!
 * BlueprintTree:
@@ -42,10 +42,15 @@ Granted, this approach is quite archaic, but in my opinion works quite well for 
 
 Minimum C++ version required: C++11.
 
-The easiest way to use one of the tree classes, is to simply copy class header '.h' with its template implementation '.tpp' (and possibly '.cpp' too, if it is not empty) into your project.
+The easiest way to use one of the tree classes, is to simply copy class header '.h' with its template implementation '.tpp' (and possibly '.cpp' too, if it is non-empty) into your project.
 For example, to use BinaryTree; copy 'BinaryTree.h' and 'BinaryTree.tpp' into your project. ('BinaryTree.cpp' is empty for now)
 
-If you want to clone this git repository, use 'git clone --recurse-submodules --remote-submodules https://github.com/TimiMakkonen/TreeContainer.git' or something similar to make sure that 'googletest' submodule gets cloned properly.
+If you want to clone this git repository, use
+
+```
+git clone --recurse-submodules --remote-submodules https://github.com/TimiMakkonen/TreeContainer.git
+```
+or something similar to make sure that 'googletest' submodule gets cloned properly.
 
 ---
 
