@@ -51,6 +51,11 @@ If you want to clone this git repository, use 'git clone --recurse-submodules --
 
 ### Version History:
 
+#### Version 0.8.1:
+
+* Started testing BinaryTree properly in '/tests/BinaryTree_Test.cpp'.
+* Made some minor fixes/changes.
+
 #### Version 0.8.0:
 
 * Added use instructions to 'README.md'.
@@ -98,4 +103,4 @@ BlueprintTree is mostly completed blueprint to quickly start the work on future 
 * Add Multitree(tree with multiple children).
 * Add BST(Binary Search Tree).
 * Add FamilyTree(tree with 2 parents per node).
-* Start testing.
+* Continue testing.

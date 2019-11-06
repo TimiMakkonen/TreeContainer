@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.8)
 
-project(TreeContainer VERSION 0.7.0)
+project(TreeContainer VERSION 0.8.1)
 
 enable_testing()
 

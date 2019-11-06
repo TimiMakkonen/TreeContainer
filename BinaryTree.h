@@ -75,7 +75,7 @@ private:
 	public:
 
 		// iterator constructors:
-		TreeIterator() : iter(node_pointer()), root_iter(node_pointer()) { }
+		TreeIterator() = default;
 		explicit TreeIterator(const std::unique_ptr<TreeNode>& i, const std::unique_ptr<TreeNode>& root_i) 
 								: iter(i.get()), root_iter(root_i.get()) { }
 		TreeIterator(const TreeIterator& other) 
@@ -215,8 +215,8 @@ public:
 	reverse_iterator rend();
 	const_reverse_iterator rend() const;
 
-	const_iterator cbegin();
-	const_iterator cend();
+	const_iterator cbegin() const;
+	const_iterator cend() const;
 	const_reverse_iterator crbegin() const;
 	const_reverse_iterator crend() const;
 

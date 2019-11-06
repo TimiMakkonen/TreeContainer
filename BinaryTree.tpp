@@ -1,10 +1,3 @@
-#include "BinaryTree.h"
-#include "BinaryTree.h"
-#include "BinaryTree.h"
-#include "BinaryTree.h"
-#include "BinaryTree.h"
-#include "BinaryTree.h"
-#include "BinaryTree.h"
 #ifndef BINARYTREE_H
 #error __FILE__ should only be included from BinaryTree.h
 #endif
@@ -13,6 +6,7 @@
 #include <tuple>
 #include <string>
 #include <iostream>
+#include <assert.h>
 
 #include "BinaryTree.h"
 
@@ -154,12 +148,12 @@ typename BinaryTree<T>::const_reverse_iterator BinaryTree<T>::rend() const {
 }
 
 template<class T>
-typename BinaryTree<T>::const_iterator BinaryTree<T>::cbegin() {
+typename BinaryTree<T>::const_iterator BinaryTree<T>::cbegin() const {
 	return BinaryTree<T>::const_iterator(this->root, this->root);
 }
 
 template<class T>
-typename BinaryTree<T>::const_iterator BinaryTree<T>::cend() {
+typename BinaryTree<T>::const_iterator BinaryTree<T>::cend() const {
 	return BinaryTree<T>::const_iterator(nullptr, this->root);
 }
 
@@ -238,13 +232,9 @@ size_t BinaryTree<T>::subtree_size(const value_type& value) const {
 
 template<class T>
 T BinaryTree<T>::get_root() const {
-	if (this->root != nullptr) {
-		return *(this->begin());
-	}
-	else {
-		return NULL;
-	}
-	
+
+	assert(this->root != nullptr);
+	return *(this->begin());
 }
 
 template<class T>
