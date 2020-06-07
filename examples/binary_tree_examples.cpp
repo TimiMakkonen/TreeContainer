@@ -1,14 +1,17 @@
 
 #include <iostream>
-#include <vector>
 
-#include "../BinaryTree.h"
+#include <tree-container/binary_tree.h>
 
 // Excuse the crudeness of these preliminary test.
-// This is just a playground for me to check if/how everything works.
+// This is just a playground to check if/how everything works.
 void preliminaryTests() {
+	std::cout << "\n";
+	std::cout << "|-----------------------------------------------------------------|\n";
+	std::cout << "| Crude examples / preliminary tests / showcase of 'binary_tree'. |\n";
+	std::cout << "|-----------------------------------------------------------------|\n\n";
 
-	BinaryTree<int> myBinTree;
+	tree_container::binary_tree<int> myBinTree;
 
 	std::cout << "Inserting ints to myBinTree...\n\n";
 
@@ -35,7 +38,7 @@ void preliminaryTests() {
 
 	// order should be: 1 2 3 6 4 7 8 9
 	std::cout << "Iterator for loop:\n" << "Elements of the tree are: ";
-	for (BinaryTree<int>::iterator it = myBinTree.begin(); it != myBinTree.end(); ++it) {
+	for (tree_container::binary_tree<int>::iterator it = myBinTree.begin(); it != myBinTree.end(); ++it) {
 		std::cout << *it << " ";
 	}
 
@@ -55,19 +58,19 @@ void preliminaryTests() {
 	std::cout << "\n------------------------\n";
 
 	std::cout << "Print of myBinTree:\n";
-	printTree<int>(std::cout, myBinTree);
+	tree_container::printTree<int>(std::cout, myBinTree);
 
 	std::cout << "\n------------------------\n";
 
 	std::cout << "Print of myBintree starting from myBinTree.cbegin():\n";
-	printTree<int>(std::cout, myBinTree.cbegin());
+	tree_container::printTree<int>(std::cout, myBinTree.cbegin());
 
 	std::cout << "\n------------------------";
 
 	// couple empty tree print checks
-	BinaryTree<int> myEmptyTree;
-	printTree<int>(std::cout, myEmptyTree.begin());
-	printTree<int>(std::cout, myBinTree.end());
+	tree_container::binary_tree<int> myEmptyTree;
+	tree_container::printTree<int>(std::cout, myEmptyTree.begin());
+	tree_container::printTree<int>(std::cout, myBinTree.end());
 
 	std::cout << "\n------------------------\n";
 
@@ -75,7 +78,7 @@ void preliminaryTests() {
 
 	std::cout << "\n------------------------\n";
 
-	BinaryTree<int>::const_iterator cIt = myBinTree.cbegin();
+	tree_container::binary_tree<int>::const_iterator cIt = myBinTree.cbegin();
 	//*cIt = 9;
 	// should be: 1, 2 and 1
 	std::cout << "Const iterator, cbegin():  " << *cIt << "\n";
@@ -84,14 +87,14 @@ void preliminaryTests() {
 
 	std::cout << "\n------------------------\n";
 
-	BinaryTree<int>::iterator myEndIt = myBinTree.end();
-	std::cout << "Iterator, --end(): " << *--myEndIt;
+	tree_container::binary_tree<int>::iterator myEndIt = myBinTree.end();
+	std::cout << "Iterator: --end(): " << *--myEndIt;
 
 	std::cout << "\n------------------------\n";
 
-	BinaryTree<int>::iterator myIt = myBinTree.begin();
+	tree_container::binary_tree<int>::iterator myIt = myBinTree.begin();
 	//*myIt = 9;
-	std::cout << "Iterator, begin():  " << *myIt;
+	std::cout << "Iterator: begin():  " << *myIt;
 
 	std::cout << "\n------------------------\n";
 

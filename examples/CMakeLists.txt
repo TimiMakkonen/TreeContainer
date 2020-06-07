@@ -1,12 +1,9 @@
-cmake_minimum_required (VERSION 3.8)
 
-set(ExampleSources
-	BinaryTree_Examples.cpp
+set(EXAMPLE_SOURCE_LIST
+	binary_tree_examples.cpp
 )
 
-add_executable(TreeContainerExamples ${ExampleSources})
+set(EXAMPLE_APP_NAME "TreeContainerExamples")
+add_executable("${EXAMPLE_APP_NAME}" ${EXAMPLE_SOURCE_LIST})
 
-target_link_libraries(TreeContainerExamples
-	TreeContainer
-)
-
+target_link_libraries("${EXAMPLE_APP_NAME}" PRIVATE "${LIBRARY_NAME}")

@@ -1,18 +1,18 @@
-cmake_minimum_required (VERSION 3.8)
 
-set(TestSources
-	BinaryTree_Tests.cpp
+set(TEST_SOURCE_LIST
+	binary_tree_tests.cpp
 )
 
-add_executable(TreeContainerTests ${TestSources})
+set(TEST_APP_NAME "BinaryTreeTests")
+add_executable("${TEST_APP_NAME}" ${TEST_SOURCE_LIST})
 
-target_link_libraries(TreeContainerTests 
+target_link_libraries("${TEST_APP_NAME}" 
 	gtest_main
-	TreeContainer
+	"${LIBRARY_NAME}"
 )
 
 add_test(
-	NAME TreeContainerTests
-	COMMAND TreeContainerTests
+	NAME "${TEST_APP_NAME}"
+	COMMAND "${TEST_APP_NAME}"
 )
 

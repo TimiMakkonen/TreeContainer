@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../BinaryTree.h"
+#include <tree-container/binary_tree.h>
 
 class BinaryTreeTest : public ::testing::Test {
 protected:
@@ -39,10 +39,10 @@ protected:
 
 	// declarations:
 
-	BinaryTree<int> emptyIntBinTree;
-	BinaryTree<std::string> emptyStringBinTree;
+	tree_container::binary_tree<int> emptyIntBinTree;
+	tree_container::binary_tree<std::string> emptyStringBinTree;
 
-	BinaryTree<int> intBinTree1;
+	tree_container::binary_tree<int> intBinTree1;
 };
 
 using BinaryTreeDeathTest = BinaryTreeTest;
@@ -76,7 +76,7 @@ TEST_F(BinaryTreeTest, IteratorTests) { // TODO
 	EXPECT_EQ(*(--intBinTree1.crend()), 1);
 
 	// traversing with iterator tests:
-	BinaryTree<int>::iterator it1 = intBinTree1.begin();
+	tree_container::binary_tree<int>::iterator it1 = intBinTree1.begin();
 	EXPECT_EQ(*it1, 1);
 	++it1;
 	EXPECT_EQ(*it1, 2);
@@ -95,16 +95,18 @@ TEST_F(BinaryTreeTest, IteratorTests) { // TODO
 
 	// for loop iterator tests:
 	std::stringstream ss1;
-	for (BinaryTree<int>::iterator it = intBinTree1.begin(); it != intBinTree1.end(); ++it) {
+	for (tree_container::binary_tree<int>::iterator it = intBinTree1.begin(); it != intBinTree1.end(); ++it) {
 		ss1 << *it << " ";
 	}
-	EXPECT_EQ(ss1.str(), "1 2 3 6 4 7 8 9 ") << "Normal iterator for loop should print all nodes in order (depth-left first).";
+	EXPECT_EQ(ss1.str(), "1 2 3 6 4 7 8 9 ") 
+		<< "Normal iterator for loop should print all nodes in order (depth-left first).";
 
 	std::stringstream ss2;
 	for (int myNode : intBinTree1) {
 		ss2 << myNode << " ";
 	}
-	EXPECT_EQ(ss2.str(), "1 2 3 6 4 7 8 9 ") << "Normal foreach loop should print all nodes in order (depth-left first).";
+	EXPECT_EQ(ss2.str(), "1 2 3 6 4 7 8 9 ") 
+		<< "Normal foreach loop should print all nodes in order (depth-left first).";
 
 }
 
@@ -143,7 +145,7 @@ TEST_F(BinaryTreeTest, EmplacementTests) { // TODO
 TEST_F(BinaryTreeTest, InsertionTests) { //TODO
 
 	// insertion should fail, 2 has two children already
-	std::pair<BinaryTree<int>::iterator, bool> failedInsert1 = intBinTree1.insert_child(2, 5);
+	std::pair<tree_container::binary_tree<int>::iterator, bool> failedInsert1 = intBinTree1.insert_child(2, 5);
 	EXPECT_FALSE(failedInsert1.second) << "Insert should return false if parent already has two children.";
 	EXPECT_EQ(*failedInsert1.first, 2) << "Insert should return parent iterator if parent already has two children.";
 
@@ -160,30 +162,30 @@ TEST_F(BinaryTreeTest, FindTests) { //TODO
 TEST_F(BinaryTreeTest, PrintTests) { //TODO
 
 	std::stringstream ss1;
-	printTree<int>(ss1, emptyIntBinTree);
+	tree_container::printTree<int>(ss1, emptyIntBinTree);
 	EXPECT_EQ(ss1.str(), "") << "printTree with emptyIntBinTree should print nothing.";
 	ss1.str("");
 	ss1.clear();
-	printTree<int>(ss1, emptyIntBinTree.begin());
+	tree_container::printTree<int>(ss1, emptyIntBinTree.begin());
 	EXPECT_EQ(ss1.str(), "") << "printTree with emptyIntBinTree.begin() should print nothing.";
 	ss1.str("");
 	ss1.clear();
-	printTree<int>(ss1, emptyIntBinTree.end());
+	tree_container::printTree<int>(ss1, emptyIntBinTree.end());
 	EXPECT_EQ(ss1.str(), "") << "printTree with emptyIntBinTree.end() should print nothing.";
 	ss1.str("");
 	ss1.clear();
 
 
 
-	printTree<int>(ss1, intBinTree1);
+	tree_container::printTree<int>(ss1, intBinTree1);
 	EXPECT_EQ(ss1.str(), "1\n+-L-2\n|    +-L-3\n|    |    \\-L-6\n|    \\-R-4\n|         \\-L-7\n\\-R-8\n     \\-L-9\n")
 				<< "printTree with intBinTree1.begin() should print correct tree.";
 	std::stringstream ss2;
-	printTree<int>(ss2, intBinTree1.begin());
+	tree_container::printTree<int>(ss2, intBinTree1.begin());
 	EXPECT_EQ(ss1.str(), ss2.str()) << "printTree with intBinTree1.begin() should print correct tree.";
 	ss1.str("");
 	ss1.clear();
-	printTree<int>(ss1, intBinTree1.end());
+	tree_container::printTree<int>(ss1, intBinTree1.end());
 	EXPECT_EQ(ss1.str(), "") << "printTree with intBinTree1.end() should print nothing.";
 
 
