@@ -1,4 +1,4 @@
-#ifndef BINARY_TREE_H
+#ifndef TREE_CONTAINER_BINARY_TREE_H
 #define BINARY_TREE_H
 
 #include <memory>

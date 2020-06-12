@@ -1,4 +1,4 @@
-#ifndef BINARY_TREE_H
+#ifndef TREE_CONTAINER_BINARY_TREE_H
 #error __FILE__ should only be included from binary_tree.h
 #endif
 
