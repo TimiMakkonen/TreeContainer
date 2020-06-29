@@ -1,5 +1,6 @@
-#ifndef TREE_BLUEPRINT_H
-#define TREE_BLUEPRINT_H
+#ifndef TREE_CONTAINER_TREE_BLUEPRINT_H
+#define TREE_CONTAINER_TREE_BLUEPRINT_H
+
 
 #include <memory>
 
@@ -205,4 +206,4 @@ namespace tree_container {
 
 #include "tree_blueprint.tpp"
 
-#endif // TREE_BLUEPRINT_H
+#endif // TREE_CONTAINER_TREE_BLUEPRINT_H

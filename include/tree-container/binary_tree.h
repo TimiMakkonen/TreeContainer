@@ -1,5 +1,5 @@
 #ifndef TREE_CONTAINER_BINARY_TREE_H
-#define BINARY_TREE_H
+#define TREE_CONTAINER_BINARY_TREE_H
 
 #include <memory>
 
@@ -312,8 +312,8 @@ namespace tree_container {
 
 
 		// friends:
-		template <class T>
-		friend void printTree(std::ostream& os, typename binary_tree<T>::const_iterator tree_cit);
+		template <class U>
+		friend void printTree(std::ostream& os, typename binary_tree<U>::const_iterator tree_cit);
 
 	};
 
@@ -356,4 +356,4 @@ namespace tree_container {
 
 #include "binary_tree.tpp"
 
-#endif // BINARY_TREE_H
+#endif // TREE_CONTAINER_BINARY_TREE_H

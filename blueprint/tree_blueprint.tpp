@@ -1,4 +1,4 @@
-#ifndef TREE_BLUEPRINT_H
+#ifndef TREE_CONTAINER_TREE_BLUEPRINT_H
 #error __FILE__ should only be included from tree_blueprint.h
 #endif
 

@@ -53,6 +53,10 @@ Alternatively, you can use this library as part of your own CMake project as you
 
 ## Version History
 
+### Version 1.0.2
+
+* Fixed small (but potentially expensive) bug in the include guard.
+
 ### Version 1.0.1
 
 * Renamed include guard of 'binary_tree'.

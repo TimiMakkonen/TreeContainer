@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 project(TreeContainer
-        VERSION 1.0.1
+        VERSION 1.0.2
         DESCRIPTION "Contains a selection of tree-like c++ containers/"
         LANGUAGES CXX)
 
